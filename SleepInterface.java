@@ -5,12 +5,22 @@ import java.awt.event.ActionListener;
 
 
 public class SleepInterface extends JFrame implements ActionListener{
-
-	   private JLabel label;
+		private JFrame window;
+		private JPanel panel;
+	    private JLabel label;
 	    private JTextField textField;
 	    private JButton button;
 
 	    public SleepInterface() {
+	    	window = new JFrame();
+	    	panel = new JPanel();
+	    	
+	    	window.setTitle("Sleep Tracker");
+	    	window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    	window.setSize(800, 500);
+	    	window.setLocationRelativeTo(null);
+	    	window.setVisible(true);
+	    	
 	        setTitle("Sleep Data Viewer Interface");
 	        setSize(300, 200);
 	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
