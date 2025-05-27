@@ -9,8 +9,16 @@ public class SleepEntries {
     private boolean isAMST; // true if wake time is AM, false if PM
     private boolean isAMWT; // true if sleep time is AM, false if PM
     
+    private int sleepTimeHour, sleepTimeMin, wakeTimeHour, wakeTimeMin; //raw times in 12-hour format
+
     public SleepEntries(String d, int sth, int stm, int wth, int wtm, boolean ams, boolean amw) {
     	date = d;
+        //Raw times not converted to 24-hour format
+        sleepTimeHour = sth;
+        sleepTimeMin = stm;
+        wakeTimeHour = wth;
+        wakeTimeMin = wtm;
+
         isAMWT = amw;
     	isAMST = ams;
         sleepTimeMins = stm;
@@ -25,9 +33,7 @@ public class SleepEntries {
             wakeTimeHrs = 0; // convert 12 AM to 0 hours
         } else if(!isAMWT && wth != 12) {
             wakeTimeHrs = wth + 12; // convert PM hours to 24-hour format
-        }
-    	 
-    	
+        }   	
     }
     
     public int getSleepDurationMins() { //10:35 PM - 6:40 AM = 8 hrs 5 mins // 485 mins //22-6=16
@@ -43,6 +49,9 @@ public class SleepEntries {
     }
 
     public String toCSV() {
-        return String.format("%s,%02d:%02d,%02d:%02d,%b,%b", date, sleepTimeHrs, sleepTimeMins, wakeTimeHrs, wakeTimeMins, isAMST, isAMWT);
+        // Format: date,sleepTimeHour,sleepTimeMin,wakeTimeHour,wakeTimeMin,isAMST,isAMWT
+        return String.format("%s,%02d:%02d,%02d:%02d,%b,%b", date, sleepTimeHour, sleepTimeMin, wakeTimeHour, wakeTimeMin, isAMST, isAMWT);
     }
+
+    
 }
