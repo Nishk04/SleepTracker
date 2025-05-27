@@ -23,6 +23,7 @@ public class MainFrame extends JFrame {
 
     private void initUI() {
         // Initialize panels with shared data manager
+        manager = new SleepDataManager("SleepLog");
         inputPanel = new InputPanel(manager);
         // tablePanel = new TablePanel(manager);
         // chartPanel = new ChartPanel(manager);

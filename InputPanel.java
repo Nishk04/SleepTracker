@@ -138,7 +138,7 @@ public class InputPanel extends BasePanel {
             }
 
             SleepEntries entry = new SleepEntries(date, sth, stm, wth, wtm, isAMST, isAMWT);
-            // manager.addEntry(entry);
+            manager.addEntry(entry);
             statusLabel.setForeground(Color.green);
             statusLabel.setText("Entry added successfully!");
             
