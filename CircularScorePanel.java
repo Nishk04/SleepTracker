@@ -12,8 +12,8 @@ class CircularScorePanel extends JPanel {
     private String label;
     private int score;
     private Color color;
-    private int width = 200; // Default width
-    private int height = 200; // Default height
+    private int width = 50; // Default width
+    private int height = 50; // Default height
 
     public CircularScorePanel(String label, int score, Color color, int width, int height) {
         this.label = label;
@@ -30,7 +30,7 @@ class CircularScorePanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         //this.setPreferredSize(new java.awt.Dimension(width, height));
         int size = Math.min(getWidth(), getHeight()) - 10;
-
+        System.out.println(size);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Background circle

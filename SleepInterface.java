@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class SleepInterface extends JFrame implements ActionListener{
+public class SleepInterface extends JFrame implements ActionListener{ // FOR EXPERIMENTATION
 		private JFrame window;
 		private JPanel panel;
 	    private JLabel label;

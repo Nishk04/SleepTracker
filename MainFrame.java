@@ -36,7 +36,7 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        // ==== TOP STREAK BAR ====
+        // ================================================== TOP STREAK BAR ==============================================================
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
 
@@ -66,19 +66,19 @@ public class MainFrame extends JFrame {
 
         panel.add(topPanel, BorderLayout.NORTH); //adds the top panel to the main panel
 
-        // ==== MAIN CENTER AREA ==================================================================================
+        // ============================================ MAIN CENTER AREA ==================================================================================
         JPanel centerPanel = new JPanel(new GridLayout(1, 2, 20, 10));
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(7, 20, 20, 7));
         centerPanel.setBackground(Color.WHITE);
 
-        // LEFT SIDE (Avg Sleep & Consistency)
+        // LEFT SIDE (Avg Sleep & Consistency) ============================================================================================
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setBackground(Color.WHITE);
+        leftPanel.setBackground(Color.BLACK);
 
         RoundedPanel avgSleepPanel = new RoundedPanel(20, new Color(240, 250, 255));
         avgSleepPanel.setLayout(new BoxLayout(avgSleepPanel, BoxLayout.Y_AXIS));
-        avgSleepPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        avgSleepPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 20));
 
         JLabel avgDuration = new JLabel("Avg Sleep Duration: 7.5 hrs"); // TODO: Replace with actual data
         avgDuration.setFont(new Font("Arial", Font.BOLD, 16));
@@ -93,17 +93,17 @@ public class MainFrame extends JFrame {
         leftPanel.add(avgSleepPanel);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE, 75, 75); // TODO: Replace with actual consistency score
-        //consistencyScore.setPreferredSize(new Dimension(75, 75));
+        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE, 25, 25); // TODO: Replace with actual consistency score
+        consistencyScore.setPreferredSize(new Dimension(25, 25));
         leftPanel.add(consistencyScore);
 
-        // RIGHT SIDE (Score + Suggestions) 
+        // RIGHT SIDE (Score + Suggestions) =========================================
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(Color.WHITE);
 
-        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", 85, new Color(50, 200, 100), 150, 150); // TODO: Replace with actual sleep score
-        sleepScore.setPreferredSize(new Dimension(150, 150));
+        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", 85, new Color(50, 200, 100), 10, 10); //The size in constructor doesn't do anything // TODO: Replace with actual sleep score
+        sleepScore.setPreferredSize(new Dimension(150, 150)); //this actually changes the size, but not the constructor
         sleepScore.setAlignmentX(Component.CENTER_ALIGNMENT);
         rightPanel.add(sleepScore);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
