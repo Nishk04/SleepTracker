@@ -73,7 +73,7 @@ public class MainFrame extends JFrame {
 
         // LEFT SIDE (Avg Sleep & Consistency) ============================================================================================
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS)); //
         leftPanel.setBackground(Color.BLACK);
 
         RoundedPanel avgSleepPanel = new RoundedPanel(20, new Color(240, 250, 255));
@@ -93,8 +93,13 @@ public class MainFrame extends JFrame {
         leftPanel.add(avgSleepPanel);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE, 25, 25); // TODO: Replace with actual consistency score
-        consistencyScore.setPreferredSize(new Dimension(25, 25));
+        //CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE, 10, 10); // TODO: Replace with actual consistency score
+        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE);
+        consistencyScore.setMaximumSize(new Dimension(200, 200)); // this only works for boxLayout
+        consistencyScore.setPreferredSize(new Dimension(150, 150));  
+        consistencyScore.setAlignmentX(Component.CENTER_ALIGNMENT); 
+
+        //consistencyScore.setPreferredSize(new Dimension(25, 25));
         leftPanel.add(consistencyScore);
 
         // RIGHT SIDE (Score + Suggestions) =========================================
@@ -102,7 +107,7 @@ public class MainFrame extends JFrame {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(Color.WHITE);
 
-        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", 85, new Color(50, 200, 100), 10, 10); //The size in constructor doesn't do anything // TODO: Replace with actual sleep score
+        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", 85, new Color(50, 200, 100)); //The size in constructor doesn't do anything // TODO: Replace with actual sleep score
         sleepScore.setPreferredSize(new Dimension(150, 150)); //this actually changes the size, but not the constructor
         sleepScore.setAlignmentX(Component.CENTER_ALIGNMENT);
         rightPanel.add(sleepScore);
