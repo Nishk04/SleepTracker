@@ -93,25 +93,32 @@ public class MainFrame extends JFrame {
         leftPanel.add(avgSleepPanel);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        //CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE, 10, 10); // TODO: Replace with actual consistency score
-        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE);
-        consistencyScore.setMaximumSize(new Dimension(200, 200)); // this only works for boxLayout
-        consistencyScore.setPreferredSize(new Dimension(150, 150));  
-        consistencyScore.setAlignmentX(Component.CENTER_ALIGNMENT); 
-
-        //consistencyScore.setPreferredSize(new Dimension(25, 25));
-        leftPanel.add(consistencyScore);
-
         // RIGHT SIDE (Score + Suggestions) =========================================
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(Color.WHITE);
 
-        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", 85, new Color(50, 200, 100)); //The size in constructor doesn't do anything // TODO: Replace with actual sleep score
-        sleepScore.setPreferredSize(new Dimension(150, 150)); //this actually changes the size, but not the constructor
+        JPanel rightsidePanel = new JPanel();
+        rightsidePanel.setLayout(new BoxLayout(rightsidePanel, BoxLayout.X_AXIS));
+        rightsidePanel.setBackground(Color.WHITE);
+
+        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", 85, new Color(50, 200, 100));
+        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE);
+
+        Dimension circleSize = new Dimension(160, 160);
+        sleepScore.setPreferredSize(circleSize);
+        consistencyScore.setPreferredSize(circleSize);
+
         sleepScore.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rightPanel.add(sleepScore);
-        rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        consistencyScore.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        rightsidePanel.add(Box.createHorizontalGlue()); // pushes everything to center
+        rightsidePanel.add(sleepScore);
+        rightsidePanel.add(Box.createRigidArea(new Dimension(20, 0))); // space between
+        rightsidePanel.add(consistencyScore);
+        rightsidePanel.add(Box.createHorizontalGlue());
+
+        rightPanel.add(rightsidePanel);
 
         JTextArea suggestions = new JTextArea("Suggestions:\n- Sleep earlier.\n- Avoid screens before bed.\n- Keep your room dark and cool.");
         suggestions.setFont(new Font("Arial", Font.PLAIN, 13));
