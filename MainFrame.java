@@ -36,7 +36,7 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        // ================================================== TOP STREAK BAR ==============================================================
+        // ===================== TOP STREAK BAR ==========================
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
 
@@ -66,34 +66,61 @@ public class MainFrame extends JFrame {
 
         panel.add(topPanel, BorderLayout.NORTH); //adds the top panel to the main panel
 
-        // ============================================ MAIN CENTER AREA ==================================================================================
+        // =================== MAIN CENTER AREA ==========================
         JPanel centerPanel = new JPanel(new GridLayout(1, 2, 20, 10));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(7, 20, 20, 7));
         centerPanel.setBackground(Color.WHITE);
 
-        // LEFT SIDE (Avg Sleep & Consistency) ============================================================================================
+        // ========== LEFT SIDE (Avg Sleep & Consistency) ===============
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS)); //
-        leftPanel.setBackground(Color.BLACK);
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setBackground(Color.WHITE);
 
         RoundedPanel avgSleepPanel = new RoundedPanel(20, new Color(240, 250, 255));
-        avgSleepPanel.setLayout(new BoxLayout(avgSleepPanel, BoxLayout.Y_AXIS));
-        avgSleepPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 20));
+        avgSleepPanel.setLayout(new BorderLayout());
+        avgSleepPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel avgSleepContent = new JPanel();
+        avgSleepContent.setOpaque(false);
+        avgSleepContent.setLayout(new BoxLayout(avgSleepContent, BoxLayout.Y_AXIS));
 
         JLabel avgDuration = new JLabel("Avg Sleep Duration: 7.5 hrs"); // TODO: Replace with actual data
         avgDuration.setFont(new Font("Arial", Font.BOLD, 16));
 
         JLabel evalMsg = new JLabel("You're doing pretty well!"); // TODO: Replace with actual evaluation or just a bank of phrases
         evalMsg.setFont(new Font("Arial", Font.PLAIN, 14));
+        evalMsg.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-        avgSleepPanel.add(avgDuration);
-        avgSleepPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        avgSleepPanel.add(evalMsg);
-        avgSleepPanel.setMaximumSize(new Dimension(400, 100));
+        avgSleepContent.add(avgDuration);
+        avgSleepContent.add(evalMsg);
+
+        avgSleepPanel.add(avgSleepContent, BorderLayout.CENTER);
+        avgSleepPanel.setMaximumSize(new Dimension(400, 120));
+
         leftPanel.add(avgSleepPanel);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // RIGHT SIDE (Score + Suggestions) =========================================
+        JLabel consistencyLabel = new JLabel("Weekly Sleep Log"); // TODO: Replace with actual data
+        consistencyLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        consistencyLabel.setAlignmentX(Component.LEFT_ALIGNMENT
+        
+        
+        
+        );
+        leftPanel.add(consistencyLabel);
+
+        // Bar Graph for Sleep Hours
+        SleepBarGraphPanel barGraph = new SleepBarGraphPanel();
+        barGraph.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        leftPanel.add(barGraph);
+        JPanel graphWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        graphWrapper.setOpaque(false); // so background is inherited
+        graphWrapper.add(barGraph);
+        leftPanel.add(graphWrapper);
+
+
+        // ========== RIGHT SIDE (Score + Suggestions) ==================
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(Color.WHITE);
@@ -128,6 +155,7 @@ public class MainFrame extends JFrame {
         suggestions.setBackground(new Color(255, 250, 240));
         suggestions.setBorder(BorderFactory.createTitledBorder("Sleep Tips"));
 
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         rightPanel.add(suggestions);
 
         centerPanel.add(leftPanel);
