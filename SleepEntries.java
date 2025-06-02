@@ -53,5 +53,23 @@ public class SleepEntries {
         return String.format("%s,%02d:%02d,%02d:%02d,%b,%b", date, sleepTimeHour, sleepTimeMin, wakeTimeHour, wakeTimeMin, isAMST, isAMWT);
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public int getTotalSleepHours() {
+        return getSleepDurationMins() / 60; // returns total sleep hours
+    }
+
+    public int getTotalSleepMinsWithoutHours() {
+        return getSleepDurationMins() % 60; // returns remaining minutes after hours
+    }
     
+    public boolean isAMST() {
+        return isAMST;
+    }
+    public boolean isAMWT() {
+        return isAMWT;
+    }
+
 }

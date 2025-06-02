@@ -28,6 +28,22 @@ public class SleepDataManager {
         saveToFile(); // Save after deleting an entry
     }
 
+    public double getAvgSleepForLastSevenDays() {
+        if (entries.isEmpty() || entries.size() < 7) {
+            return entries.get(entries.size() - 1).getTotalSleepHours();
+        }
+        
+        double totalSleep = 0.0;
+        int count = 0;
+        for (int i = entries.size() - 1; i >= 0 && count < 7; i--) {
+            totalSleep += entries.get(i).getTotalSleepHours();
+            count++;
+        }
+        
+        return totalSleep / Math.min(count, 7);
+    }
+
+
     // Gets all entries
     public ArrayList<SleepEntries> getEntries() {
         return entries;

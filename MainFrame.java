@@ -84,7 +84,11 @@ public class MainFrame extends JFrame {
         avgSleepContent.setOpaque(false);
         avgSleepContent.setLayout(new BoxLayout(avgSleepContent, BoxLayout.Y_AXIS));
 
-        JLabel avgDuration = new JLabel("Avg Sleep Duration: 7.5 hrs"); // TODO: Replace with actual data
+        double avgSleepHours = manager.getAvgSleepForLastSevenDays();
+        if(avgSleepHours < 0) {
+            avgSleepHours = 0; // Ensure non-negative average
+        }
+        JLabel avgDuration = new JLabel(String.format("Avg Sleep Duration: %.1f hours", avgSleepHours)); // TODO: Replace with actual data
         avgDuration.setFont(new Font("Arial", Font.BOLD, 16));
 
         JLabel evalMsg = new JLabel("You're doing pretty well!"); // TODO: Replace with actual evaluation or just a bank of phrases
@@ -99,20 +103,16 @@ public class MainFrame extends JFrame {
 
         leftPanel.add(avgSleepPanel);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
+        
         JLabel consistencyLabel = new JLabel("Weekly Sleep Log"); // TODO: Replace with actual data
         consistencyLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        consistencyLabel.setAlignmentX(Component.LEFT_ALIGNMENT
-        
-        
-        
-        );
+        consistencyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.add(consistencyLabel);
 
         // Bar Graph for Sleep Hours
         SleepBarGraphPanel barGraph = new SleepBarGraphPanel();
-        barGraph.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        barGraph.setAlignmentX(Component.LEFT_ALIGNMENT);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 40)));
         leftPanel.add(barGraph);
         JPanel graphWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         graphWrapper.setOpaque(false); // so background is inherited
