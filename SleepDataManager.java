@@ -29,7 +29,10 @@ public class SleepDataManager {
     }
 
     public double getAvgSleepForLastSevenDays() {
-        if (entries.isEmpty() || entries.size() < 7) {
+        if(entries == null || entries.isEmpty()) {
+            return 0.0; // No entries available
+        }
+        else if (entries.isEmpty() || entries.size() < 7) {
             return entries.get(entries.size() - 1).getTotalSleepHours();
         }
         

@@ -102,19 +102,22 @@ public class MainFrame extends JFrame {
         avgSleepPanel.setMaximumSize(new Dimension(400, 120));
 
         leftPanel.add(avgSleepPanel);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 30)));
         
-        JLabel consistencyLabel = new JLabel("Weekly Sleep Log"); // TODO: Replace with actual data
+        //================== Weekly Sleep Log Graph =================
+        
+        JPanel titleWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        titleWrapper.setOpaque(false);
+
+        JLabel consistencyLabel = new JLabel("Weekly Sleep Log");
         consistencyLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        consistencyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        leftPanel.add(consistencyLabel);
+        titleWrapper.add(consistencyLabel);
+        leftPanel.add(titleWrapper);
 
         // Bar Graph for Sleep Hours
         SleepBarGraphPanel barGraph = new SleepBarGraphPanel();
         barGraph.setAlignmentX(Component.LEFT_ALIGNMENT);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 40)));
-        leftPanel.add(barGraph);
-        JPanel graphWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel graphWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         graphWrapper.setOpaque(false); // so background is inherited
         graphWrapper.add(barGraph);
         leftPanel.add(graphWrapper);
@@ -148,7 +151,7 @@ public class MainFrame extends JFrame {
         rightPanel.add(rightsidePanel);
 
         JTextArea suggestions = new JTextArea("Suggestions:\n- Sleep earlier.\n- Avoid screens before bed.\n- Keep your room dark and cool.");
-        suggestions.setFont(new Font("Arial", Font.PLAIN, 13));
+        suggestions.setFont(new Font("Arial", Font.PLAIN, 16));
         suggestions.setWrapStyleWord(true);
         suggestions.setLineWrap(true);
         suggestions.setEditable(false);

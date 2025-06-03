@@ -6,7 +6,7 @@ public class SleepBarGraphPanel extends JPanel {
     private final double[] hours = {6.5, 7.2, 8.0, 7.8, 6.9, 7.4, 7.0}; // Example data
 
     public SleepBarGraphPanel() {
-        setPreferredSize(new Dimension(400, 200));
+        setPreferredSize(new Dimension(450, 300));
         setBackground(Color.WHITE);
     }
 
@@ -17,16 +17,27 @@ public class SleepBarGraphPanel extends JPanel {
 
         int width = getWidth();
         int height = getHeight();
-        int padding = 60;
-        int graphHeight = height - 2 * padding;
+        int padding = 30;
+        int graphHeight = height - padding*2;
 
         double maxHours = 10.0;
         int barWidth = (width - 2 * padding) / days.length - 15;
 
-        // Draw axes
+        // Y-axis
         g2.setColor(Color.GRAY);
         g2.drawLine(padding, padding, padding, height - padding); // y-axis
         g2.drawLine(padding, height - padding, width - padding, height - padding); // x-axis
+
+        // Add y-axis labels (hours)
+        g2.setColor(Color.BLACK);
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
+        for (int i = 0; i <= maxHours; i++) {
+            int y = height - padding - (int) ((i / maxHours) * graphHeight);
+            g2.drawString(i + "h", padding - 30, y + 5);
+            g2.setColor(new Color(220, 220, 220)); // Light grid lines
+            g2.drawLine(padding, y, width - padding, y);
+            g2.setColor(Color.BLACK);
+        }
 
         // Draw bars
         for (int i = 0; i < days.length; i++) {
@@ -41,4 +52,5 @@ public class SleepBarGraphPanel extends JPanel {
             g2.drawString(days[i], x + barWidth / 4, height - padding + 15);
         }
     }
+
 }
