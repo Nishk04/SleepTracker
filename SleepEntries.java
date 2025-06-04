@@ -35,7 +35,13 @@ public class SleepEntries {
             wakeTimeHrs = wth + 12; // convert PM hours to 24-hour format
         }   	
     }
-    
+    public int getSleepTimeHour() {
+        return sleepTimeHour;
+    }
+
+    public int getSleepTimeMin() {
+        return sleepTimeMin;
+    }
     public int getSleepDurationMins() { //10:35 PM - 6:40 AM = 8 hrs 5 mins // 485 mins //22-6=16
     	int hrs = 0;
         if(sleepTimeHrs > wakeTimeHrs || (sleepTimeHrs == wakeTimeHrs && sleepTimeMins > wakeTimeMins)) {
