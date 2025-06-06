@@ -5,7 +5,7 @@ class CircularScorePanel extends JPanel {
     private String label;
     private int score;
 
-    public CircularScorePanel(String label, int score, Color unusedColor) {
+    public CircularScorePanel(String label, int score) {
         this.label = label;
         this.score = score;
         setOpaque(false);

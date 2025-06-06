@@ -142,6 +142,8 @@ public class SleepDataManager {
     }
 
     // Returns a score out of 100 based on how close the average is to 8 hours
+    // If the average deviation is 90 minutes or more, the score is 0.
+    // If all sleep times are exactly the same, the score is 100.
     public int calculateSleepScore() {
         double avg = getAvgSleepForLastSevenDays();
         if (avg >= 8) return 100;

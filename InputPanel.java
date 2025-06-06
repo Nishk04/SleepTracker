@@ -149,9 +149,9 @@ public class InputPanel extends BasePanel {
 
         } catch (NumberFormatException ex) {
             statusLabel.setForeground(Color.RED);
-            statusLabel.setText("⚠️ Invalid time format. Use whole numbers.");
+            statusLabel.setText("Invalid time format. Use whole numbers.");
         } catch (Exception ex) {
-            statusLabel.setText("⚠️ Error: " + ex.getMessage());
+            statusLabel.setText("Error: " + ex.getMessage());
         }
     }
 

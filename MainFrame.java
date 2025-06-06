@@ -12,13 +12,13 @@ public class MainFrame extends JFrame {
     private InputPanel inputPanel;
     private JPanel dashboardPanel;
     private JTabbedPane tabbedPane;
-    private SleepBarGraphPanel barGraph;  // <— keep a field reference so we can repaint it when needed
+    private SleepBarGraphPanel barGraph;
 
     private JLabel goalReminder;
     private JTextField goalInputField;
     private JButton submitGoalButton;
     private JButton resetGoalButton;
-    private JLabel errorLabel; // new error label
+    private JLabel errorLabel;
 
     public MainFrame() {
         super("Sleep Tracker App");
@@ -32,15 +32,12 @@ public class MainFrame extends JFrame {
 
     private void initUI() {
         inputPanel = new InputPanel(manager);
-
-        // Create dashboardPanel, including our updated SleepBarGraphPanel
         dashboardPanel = createDashboardPanel();
 
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Dashboard", dashboardPanel);
         tabbedPane.addTab("Add Sleep Entry", inputPanel);
 
-        // Whenever the user switches tabs, if they land on "Dashboard," repaint the bar graph
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -59,7 +56,7 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        // ──────────────────────────────────────── Top: Streak Bar & Goal Panel ────────────────────────────────────────
+        // ─── Top: Streak Bar & Goal Input ───
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
 
@@ -71,9 +68,7 @@ public class MainFrame extends JFrame {
                 g.fillRoundRect(20, 10, getWidth() - 160, 40, 20, 20);
                 g.setColor(Color.BLACK);
                 Graphics2D g2d = (Graphics2D) g;
-                Font boldFont = new Font("Arial", Font.BOLD, 20);
-                g2d.setFont(boldFont);
-
+                g2d.setFont(new Font("Arial", Font.BOLD, 20));
                 int streakCount = manager.getStreakMatchingGoal();
                 String streakText = "Sleep Streak: " + streakCount + (streakCount == 1 ? " Day" : " Days") + "!";
                 g2d.drawString(streakText, 40, 35);
@@ -112,17 +107,9 @@ public class MainFrame extends JFrame {
                 if (!goalTime.isEmpty()) {
                     if (!isValidTimeFormat(goalTime)) {
                         errorLabel.setVisible(true);
-                        Timer timer = new Timer(2000, new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                errorLabel.setVisible(false);
-                            }
-                        });
-                        timer.setRepeats(false);
-                        timer.start();
+                        new Timer(2000, e1 -> errorLabel.setVisible(false)).start();
                         return;
                     }
-
                     goalReminder.setText("Goal: sleep by " + goalTime);
                     goalReminder.setVisible(true);
                     resetGoalButton.setVisible(true);
@@ -130,7 +117,7 @@ public class MainFrame extends JFrame {
                     submitGoalButton.setVisible(false);
                     errorLabel.setVisible(false);
                     manager.setGoalString(goalTime);
-                    dashboardPanel.repaint(); // repaint streak bar
+                    dashboardPanel.repaint();
                 }
             }
         });
@@ -153,7 +140,6 @@ public class MainFrame extends JFrame {
         inputRow.add(submitGoalButton);
         inputRow.add(goalReminder);
         inputRow.add(resetGoalButton);
-
         goalPanel.add(inputRow);
         goalPanel.add(errorLabel);
 
@@ -161,12 +147,12 @@ public class MainFrame extends JFrame {
         topPanel.add(goalPanel, BorderLayout.EAST);
         panel.add(topPanel, BorderLayout.NORTH);
 
-        // ──────────────────────────────────────── Center: Left (Avg + Bar Graph) & Right (Scores + Tips) ────────────────────────────────────────
+        // ─── Center: Avg Sleep + Graph + Circular Scores ───
         JPanel centerPanel = new JPanel(new GridLayout(1, 2, 20, 10));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(7, 20, 20, 7));
         centerPanel.setBackground(Color.WHITE);
 
-        // Left side: average sleep and bar graph
+        // Left side
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBackground(Color.WHITE);
@@ -180,10 +166,7 @@ public class MainFrame extends JFrame {
         avgSleepContent.setLayout(new BoxLayout(avgSleepContent, BoxLayout.Y_AXIS));
 
         double avgSleepHours = manager.getAvgSleepForLastSevenDays();
-        if (avgSleepHours < 0) {
-            avgSleepHours = 0;
-        }
-        JLabel avgDuration = new JLabel(String.format("Avg Sleep Duration: %.1f hours", avgSleepHours));
+        JLabel avgDuration = new JLabel(String.format("Avg Sleep Duration: %.1f hours", Math.max(avgSleepHours, 0)));
         avgDuration.setFont(new Font("Arial", Font.BOLD, 16));
 
         JLabel evalMsg = new JLabel("You're doing pretty well!");
@@ -192,22 +175,17 @@ public class MainFrame extends JFrame {
 
         avgSleepContent.add(avgDuration);
         avgSleepContent.add(evalMsg);
-
         avgSleepPanel.add(avgSleepContent, BorderLayout.CENTER);
         avgSleepPanel.setMaximumSize(new Dimension(400, 120));
 
         leftPanel.add(avgSleepPanel);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        JPanel titleWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        titleWrapper.setOpaque(false);
-
         JLabel consistencyLabel = new JLabel("Weekly Sleep Log");
         consistencyLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        titleWrapper.add(consistencyLabel);
-        leftPanel.add(titleWrapper);
+        consistencyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        leftPanel.add(consistencyLabel);
 
-        // Instantiate the bar graph with our manager reference (not last7Entries!)
         barGraph = new SleepBarGraphPanel(manager);
         barGraph.setAlignmentX(Component.LEFT_ALIGNMENT);
         JPanel graphWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -215,38 +193,31 @@ public class MainFrame extends JFrame {
         graphWrapper.add(barGraph);
         leftPanel.add(graphWrapper);
 
-        // Right side: circular scores + suggestions
+        // Right side
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(Color.WHITE);
 
-        JPanel rightsidePanel = new JPanel();
-        rightsidePanel.setLayout(new BoxLayout(rightsidePanel, BoxLayout.X_AXIS));
-        rightsidePanel.setBackground(Color.WHITE);
+        JPanel scorePanel = new JPanel();
+        scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.X_AXIS));
+        scorePanel.setBackground(Color.WHITE);
 
         int sleepScoreValue = manager.calculateSleepScore();
         int consistencyScoreValue = manager.calculateConsistencyScore();
 
-        Color sleepColor = sleepScoreValue >= 80 ? new Color(50, 200, 100) : (sleepScoreValue >= 60 ? Color.ORANGE : Color.RED);
-        Color consistencyColor = consistencyScoreValue >= 80 ? new Color(50, 200, 100) : (consistencyScoreValue >= 60 ? Color.ORANGE : Color.RED);
-
-        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", sleepScoreValue, sleepColor);
-        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", consistencyScoreValue, consistencyColor);
+        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", sleepScoreValue);
+        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", consistencyScoreValue);
 
         Dimension circleSize = new Dimension(160, 160);
         sleepScore.setPreferredSize(circleSize);
         consistencyScore.setPreferredSize(circleSize);
 
-        sleepScore.setAlignmentX(Component.CENTER_ALIGNMENT);
-        consistencyScore.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        rightsidePanel.add(Box.createHorizontalGlue());
-        rightsidePanel.add(sleepScore);
-        rightsidePanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        rightsidePanel.add(consistencyScore);
-        rightsidePanel.add(Box.createHorizontalGlue());
-
-        rightPanel.add(rightsidePanel);
+        scorePanel.add(Box.createHorizontalGlue());
+        scorePanel.add(sleepScore);
+        scorePanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        scorePanel.add(consistencyScore);
+        scorePanel.add(Box.createHorizontalGlue());
+        rightPanel.add(scorePanel);
 
         JTextArea suggestions = new JTextArea("Suggestions:\n- Sleep earlier.\n- Avoid screens before bed.\n- Keep your room dark and cool.");
         suggestions.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -263,7 +234,6 @@ public class MainFrame extends JFrame {
         centerPanel.add(rightPanel);
 
         panel.add(centerPanel, BorderLayout.CENTER);
-
         return panel;
     }
 
