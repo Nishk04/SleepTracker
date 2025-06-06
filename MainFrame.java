@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +12,7 @@ public class MainFrame extends JFrame {
     private InputPanel inputPanel;
     private JPanel dashboardPanel;
     private JTabbedPane tabbedPane;
+    private SleepBarGraphPanel barGraph;  // <— keep a field reference so we can repaint it when needed
 
     private JLabel goalReminder;
     private JTextField goalInputField;
@@ -21,7 +24,6 @@ public class MainFrame extends JFrame {
         super("Sleep Tracker App");
         manager = new SleepDataManager("SleepLog");
         initUI();
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
@@ -30,11 +32,25 @@ public class MainFrame extends JFrame {
 
     private void initUI() {
         inputPanel = new InputPanel(manager);
+
+        // Create dashboardPanel, including our updated SleepBarGraphPanel
         dashboardPanel = createDashboardPanel();
 
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Dashboard", dashboardPanel);
         tabbedPane.addTab("Add Sleep Entry", inputPanel);
+
+        // Whenever the user switches tabs, if they land on "Dashboard," repaint the bar graph
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int selectedIndex = tabbedPane.getSelectedIndex();
+                String title = tabbedPane.getTitleAt(selectedIndex);
+                if ("Dashboard".equals(title)) {
+                    barGraph.repaint();
+                }
+            }
+        });
 
         add(tabbedPane, BorderLayout.CENTER);
     }
@@ -43,6 +59,7 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
+        // ──────────────────────────────────────── Top: Streak Bar & Goal Panel ────────────────────────────────────────
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
 
@@ -113,7 +130,7 @@ public class MainFrame extends JFrame {
                     submitGoalButton.setVisible(false);
                     errorLabel.setVisible(false);
                     manager.setGoalString(goalTime);
-                    dashboardPanel.repaint();
+                    dashboardPanel.repaint(); // repaint streak bar
                 }
             }
         });
@@ -144,10 +161,12 @@ public class MainFrame extends JFrame {
         topPanel.add(goalPanel, BorderLayout.EAST);
         panel.add(topPanel, BorderLayout.NORTH);
 
+        // ──────────────────────────────────────── Center: Left (Avg + Bar Graph) & Right (Scores + Tips) ────────────────────────────────────────
         JPanel centerPanel = new JPanel(new GridLayout(1, 2, 20, 10));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(7, 20, 20, 7));
         centerPanel.setBackground(Color.WHITE);
 
+        // Left side: average sleep and bar graph
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setBackground(Color.WHITE);
@@ -188,13 +207,15 @@ public class MainFrame extends JFrame {
         titleWrapper.add(consistencyLabel);
         leftPanel.add(titleWrapper);
 
-        SleepBarGraphPanel barGraph = new SleepBarGraphPanel();
+        // Instantiate the bar graph with our manager reference (not last7Entries!)
+        barGraph = new SleepBarGraphPanel(manager);
         barGraph.setAlignmentX(Component.LEFT_ALIGNMENT);
         JPanel graphWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         graphWrapper.setOpaque(false);
         graphWrapper.add(barGraph);
         leftPanel.add(graphWrapper);
 
+        // Right side: circular scores + suggestions
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(Color.WHITE);
@@ -203,8 +224,14 @@ public class MainFrame extends JFrame {
         rightsidePanel.setLayout(new BoxLayout(rightsidePanel, BoxLayout.X_AXIS));
         rightsidePanel.setBackground(Color.WHITE);
 
-        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", 85, new Color(50, 200, 100));
-        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", 50, Color.ORANGE);
+        int sleepScoreValue = manager.calculateSleepScore();
+        int consistencyScoreValue = manager.calculateConsistencyScore();
+
+        Color sleepColor = sleepScoreValue >= 80 ? new Color(50, 200, 100) : (sleepScoreValue >= 60 ? Color.ORANGE : Color.RED);
+        Color consistencyColor = consistencyScoreValue >= 80 ? new Color(50, 200, 100) : (consistencyScoreValue >= 60 ? Color.ORANGE : Color.RED);
+
+        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", sleepScoreValue, sleepColor);
+        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", consistencyScoreValue, consistencyColor);
 
         Dimension circleSize = new Dimension(160, 160);
         sleepScore.setPreferredSize(circleSize);

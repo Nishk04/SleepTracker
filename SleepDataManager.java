@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,10 +9,10 @@ public class SleepDataManager {
     private String goalString;
 
     public SleepDataManager(String filePath) {
-        entries = new ArrayList<SleepEntries>();
+        entries = new ArrayList<>();
         dataFile = new File(filePath);
         goalString = null;
-        loadFromFile(); // Load any existing entries
+        loadFromFile();
     }
 
     public void addEntry(SleepEntries entry) {
@@ -30,68 +27,66 @@ public class SleepDataManager {
         }
     }
 
-    public double getAvgSleepForLastSevenDays() {
-        if (entries == null || entries.isEmpty()) {
-            return 0.0;
-        } else if (entries.size() < 7) {
-            return entries.get(entries.size() - 1).getTotalSleepHours();
-        }
-
-        double totalSleep = 0.0;
-        int count = 0;
-        for (int i = entries.size() - 1; i >= 0 && count < 7; i--) {
-            totalSleep += entries.get(i).getTotalSleepHours();
-            count++;
-        }
-
-        return totalSleep / Math.min(count, 7);
-    }
-
     public ArrayList<SleepEntries> getEntries() {
         return entries;
     }
 
+    public ArrayList<SleepEntries> getLastSevenEntries() {
+        ArrayList<SleepEntries> last7 = new ArrayList<>();
+        int start = Math.max(0, entries.size() - 7);
+        for (int i = start; i < entries.size(); i++) {
+            last7.add(entries.get(i));
+        }
+        return last7;
+    }
+
+    public double getAvgSleepForLastSevenDays() {
+        ArrayList<SleepEntries> last7 = getLastSevenEntries();
+        if (last7.isEmpty()) return 0.0;
+        double total = 0;
+        for (SleepEntries e : last7) {
+            total += e.getTotalSleepHours();
+        }
+        return total / last7.size();
+    }
+
     public void saveToFile() {
-        try {
-            PrintWriter writer = new PrintWriter(dataFile);
+        try (PrintWriter writer = new PrintWriter(dataFile)) {
             for (SleepEntries entry : entries) {
                 writer.println(entry.toCSV());
             }
-            writer.close();
-            System.out.println("Successfully wrote to the file.");
+            System.out.println("Successfully saved data.");
         } catch (IOException e) {
-            System.out.println("An error occurred with writing entries to the CSV.");
+            System.out.println("Error saving file.");
             e.printStackTrace();
         }
     }
 
     public void loadFromFile() {
-        try {
-            Scanner scanner = new Scanner(dataFile);
+        if (!dataFile.exists()) return;
+        try (Scanner scanner = new Scanner(dataFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] parts = line.split(",");
                 if (parts.length == 6) {
                     String date = parts[0];
-                    String[] sleepTimeParts = parts[1].split(":");
-                    String[] wakeTimeParts = parts[2].split(":");
+                    String[] sleepTime = parts[1].split(":");
+                    String[] wakeTime = parts[2].split(":");
+
+                    int sth = Integer.parseInt(sleepTime[0]);
+                    int stm = Integer.parseInt(sleepTime[1]);
+                    int wth = Integer.parseInt(wakeTime[0]);
+                    int wtm = Integer.parseInt(wakeTime[1]);
+
                     boolean isAMST = Boolean.parseBoolean(parts[3]);
                     boolean isAMWT = Boolean.parseBoolean(parts[4]);
 
-                    int sleepTimeHour = Integer.parseInt(sleepTimeParts[0]);
-                    int sleepTimeMin = Integer.parseInt(sleepTimeParts[1]);
-                    int wakeTimeHour = Integer.parseInt(wakeTimeParts[0]);
-                    int wakeTimeMin = Integer.parseInt(wakeTimeParts[1]);
-
-                    SleepEntries entry = new SleepEntries(date, sleepTimeHour, sleepTimeMin, wakeTimeHour, wakeTimeMin, isAMST, isAMWT);
+                    SleepEntries entry = new SleepEntries(date, sth, stm, wth, wtm, isAMST, isAMWT);
                     entries.add(entry);
                 }
             }
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Data file not found. Starting with an empty list.");
         } catch (Exception e) {
-            System.out.println("An error occurred while loading entries from the CSV.");
+            System.out.println("Error reading file.");
             e.printStackTrace();
         }
     }
@@ -99,7 +94,6 @@ public class SleepDataManager {
     public void clearAllEntries() {
         entries.clear();
         saveToFile();
-        System.out.println("All entries cleared.");
     }
 
     public void setGoalString(String goal) {
@@ -107,54 +101,81 @@ public class SleepDataManager {
     }
 
     public String getGoalString() {
-        return this.goalString;
+        return goalString;
     }
 
-    // New method: calculates streak of entries meeting the goal
     public int getStreakMatchingGoal() {
-        if (goalString == null || goalString.isEmpty()) {
-            return 0;
-        }
-
-        // Convert goal string (e.g. "11:00 PM") into LocalTime
+        if (goalString == null || goalString.isEmpty()) return 0;
         LocalTime goalTime = parseGoalTo24Hour(goalString);
         if (goalTime == null) return 0;
 
         int streak = 0;
-
         for (int i = entries.size() - 1; i >= 0; i--) {
-            SleepEntries entry = entries.get(i);
+            SleepEntries e = entries.get(i);
+            int hour = e.getSleepTimeHour();
+            if (!e.isAMST() && hour != 12) hour += 12;
+            if (e.isAMST() && hour == 12) hour = 0;
 
-            int hour = entry.getSleepTimeHour();
-            if (!entry.isAMST() && hour != 12) hour += 12;
-            if (entry.isAMST() && hour == 12) hour = 0;
-
-            LocalTime entrySleep = LocalTime.of(hour, entry.getSleepTimeMin());
-            if (entrySleep.isBefore(goalTime) || entrySleep.equals(goalTime)) {
+            LocalTime entryTime = LocalTime.of(hour, e.getSleepTimeMin());
+            if (!entryTime.isAfter(goalTime)) {
                 streak++;
             } else {
-                break; // streak broken
+                break;
             }
         }
-
         return streak;
     }
 
     private LocalTime parseGoalTo24Hour(String goal) {
         try {
             String[] parts = goal.split(" ");
-            String[] timeParts = parts[0].split(":");
-            int hour = Integer.parseInt(timeParts[0]);
-            int min = Integer.parseInt(timeParts[1]);
+            String[] time = parts[0].split(":");
+            int hour = Integer.parseInt(time[0]);
+            int min = Integer.parseInt(time[1]);
             boolean isPM = parts[1].equalsIgnoreCase("PM");
-
             if (isPM && hour != 12) hour += 12;
             if (!isPM && hour == 12) hour = 0;
-
             return LocalTime.of(hour, min);
         } catch (Exception e) {
-            System.out.println("Invalid goal format.");
             return null;
         }
     }
+
+    // Returns a score out of 100 based on how close the average is to 8 hours
+    public int calculateSleepScore() {
+        double avg = getAvgSleepForLastSevenDays();
+        if (avg >= 8) return 100;
+        return (int) ((avg / 8.0) * 100);  // e.g., 6.5 hours → 81
+    }
+
+    // Returns a score out of 100 based on how consistent the sleep start time is
+    public int calculateConsistencyScore() {
+        ArrayList<SleepEntries> last7 = getLastSevenEntries();
+        if (last7.size() < 2) return 50;
+
+        // Convert each sleep time to minutes since midnight
+        ArrayList<Integer> times = new ArrayList<>();
+        for (SleepEntries e : last7) {
+            int hour = e.getSleepTimeHour();
+            int min = e.getSleepTimeMin();
+            if (!e.isAMST() && hour != 12) hour += 12;
+            if (e.isAMST() && hour == 12) hour = 0;
+            int totalMinutes = hour * 60 + min;
+            times.add(totalMinutes);
+        }
+
+        // Calculate the average deviation from the median time
+        times.sort(Integer::compareTo);
+        int median = times.get(times.size() / 2);
+        double deviation = 0;
+        for (int t : times) {
+            deviation += Math.abs(t - median);
+        }
+        deviation /= times.size();
+
+        // Max expected deviation we tolerate is 90 minutes
+        double normalized = Math.max(0, 100 - (deviation / 90.0) * 100);
+        return (int) normalized;
+    }
+
 }
