@@ -15,9 +15,11 @@ public class InputPanel extends BasePanel {
 
     private JButton submitButton;
     private JLabel statusLabel;
+    private MainFrame mainFrame;
 
-    public InputPanel(SleepDataManager manager) {
+    public InputPanel(SleepDataManager manager, MainFrame mainFrame) {
         super(manager);
+        this.mainFrame = mainFrame;
     }
 
     @Override
@@ -141,7 +143,8 @@ public class InputPanel extends BasePanel {
             manager.addEntry(entry);
             statusLabel.setForeground(Color.green);
             statusLabel.setText("Entry added successfully!");
-            
+            mainFrame.updateScores();
+
             new javax.swing.Timer(3000, evt -> {  
                 ((javax.swing.Timer) evt.getSource()).stop();
                 refresh(); // This will now run after 'x' seconds of showing submitted

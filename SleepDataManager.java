@@ -40,7 +40,7 @@ public class SleepDataManager {
         return last7;
     }
 
-    public double getAvgSleepForLastSevenDays() {
+    public double getAvgSleepForLastSevenDays() { 
         ArrayList<SleepEntries> last7 = getLastSevenEntries();
         if (last7.isEmpty()) return 0.0;
         double total = 0;

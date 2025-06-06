@@ -13,6 +13,8 @@ public class MainFrame extends JFrame {
     private JPanel dashboardPanel;
     private JTabbedPane tabbedPane;
     private SleepBarGraphPanel barGraph;
+    private CircularScorePanel sleepScorePanel;
+    private CircularScorePanel consistencyScorePanel;
 
     private JLabel goalReminder;
     private JTextField goalInputField;
@@ -31,7 +33,7 @@ public class MainFrame extends JFrame {
     }
 
     private void initUI() {
-        inputPanel = new InputPanel(manager);
+        inputPanel = new InputPanel(manager, this   );
         dashboardPanel = createDashboardPanel();
 
         tabbedPane = new JTabbedPane();
@@ -169,7 +171,19 @@ public class MainFrame extends JFrame {
         JLabel avgDuration = new JLabel(String.format("Avg Sleep Duration: %.1f hours", Math.max(avgSleepHours, 0)));
         avgDuration.setFont(new Font("Arial", Font.BOLD, 16));
 
-        JLabel evalMsg = new JLabel("You're doing pretty well!");
+        JLabel evalMsg;
+        if(avgSleepHours <= 2){
+            evalMsg = new JLabel("You should get more sleep!");
+        } else if(avgSleepHours <= 5){
+            evalMsg = new JLabel("Try to sleep a bit more and by a bit I mean a lot.");
+        } else if(avgSleepHours <= 7){
+            evalMsg = new JLabel("Not bad, but could be better.");
+        } else if(avgSleepHours <= 9){
+            evalMsg = new JLabel("Great job on your sleep! Keep it up!");
+        } else {
+            evalMsg = new JLabel("Wow, you're a sleep champion!");
+        }
+        
         evalMsg.setFont(new Font("Arial", Font.PLAIN, 14));
         evalMsg.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
@@ -205,17 +219,17 @@ public class MainFrame extends JFrame {
         int sleepScoreValue = manager.calculateSleepScore();
         int consistencyScoreValue = manager.calculateConsistencyScore();
 
-        CircularScorePanel sleepScore = new CircularScorePanel("Sleep Score", sleepScoreValue);
-        CircularScorePanel consistencyScore = new CircularScorePanel("Consistency", consistencyScoreValue);
+        sleepScorePanel = new CircularScorePanel("Sleep Score", sleepScoreValue);
+        consistencyScorePanel = new CircularScorePanel("Consistency", consistencyScoreValue);
 
         Dimension circleSize = new Dimension(160, 160);
-        sleepScore.setPreferredSize(circleSize);
-        consistencyScore.setPreferredSize(circleSize);
+        sleepScorePanel.setPreferredSize(circleSize);
+        consistencyScorePanel.setPreferredSize(circleSize);
 
         scorePanel.add(Box.createHorizontalGlue());
-        scorePanel.add(sleepScore);
+        scorePanel.add(sleepScorePanel);
         scorePanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        scorePanel.add(consistencyScore);
+        scorePanel.add(consistencyScorePanel);
         scorePanel.add(Box.createHorizontalGlue());
         rightPanel.add(scorePanel);
 
@@ -236,6 +250,14 @@ public class MainFrame extends JFrame {
         panel.add(centerPanel, BorderLayout.CENTER);
         return panel;
     }
+
+    public void updateScores() {
+        sleepScorePanel.setScore(manager.calculateSleepScore());
+        consistencyScorePanel.setScore(manager.calculateConsistencyScore());
+        barGraph.repaint(); // Refresh bar graph
+        dashboardPanel.repaint(); // Refresh everything, including streak bar
+    }   
+
 
     private boolean isValidTimeFormat(String time) {
         String pattern = "^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$";

@@ -19,6 +19,11 @@ class CircularScorePanel extends JPanel {
         else return new Color(50, 205, 50);                   // Bright Green
     }
 
+    public void setScore(int newScore) {
+        this.score = newScore;
+        repaint();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
