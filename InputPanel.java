@@ -144,7 +144,7 @@ public class InputPanel extends BasePanel {
             statusLabel.setForeground(Color.green);
             statusLabel.setText("Entry added successfully!");
             mainFrame.updateScores();
-
+            
             new javax.swing.Timer(3000, evt -> {  
                 ((javax.swing.Timer) evt.getSource()).stop();
                 refresh(); // This will now run after 'x' seconds of showing submitted

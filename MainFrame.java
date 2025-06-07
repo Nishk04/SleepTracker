@@ -15,6 +15,8 @@ public class MainFrame extends JFrame {
     private SleepBarGraphPanel barGraph;
     private CircularScorePanel sleepScorePanel;
     private CircularScorePanel consistencyScorePanel;
+    private JLabel avgDuration;
+    private JLabel evalMsg;
 
     private JLabel goalReminder;
     private JTextField goalInputField;
@@ -168,14 +170,13 @@ public class MainFrame extends JFrame {
         avgSleepContent.setLayout(new BoxLayout(avgSleepContent, BoxLayout.Y_AXIS));
 
         double avgSleepHours = manager.getAvgSleepForLastSevenDays();
-        JLabel avgDuration = new JLabel(String.format("Avg Sleep Duration: %.1f hours", Math.max(avgSleepHours, 0)));
+        avgDuration = new JLabel(String.format("Avg Sleep Duration: %.1f hours", Math.max(avgSleepHours, 0)));
         avgDuration.setFont(new Font("Arial", Font.BOLD, 16));
 
-        JLabel evalMsg;
         if(avgSleepHours <= 2){
             evalMsg = new JLabel("You should get more sleep!");
         } else if(avgSleepHours <= 5){
-            evalMsg = new JLabel("Try to sleep a bit more and by a bit I mean a lot.");
+            evalMsg = new JLabel("Try to sleep a bit more and by a bit I mean a lot ;)");
         } else if(avgSleepHours <= 7){
             evalMsg = new JLabel("Not bad, but could be better.");
         } else if(avgSleepHours <= 9){
@@ -183,6 +184,7 @@ public class MainFrame extends JFrame {
         } else {
             evalMsg = new JLabel("Wow, you're a sleep champion!");
         }
+
         
         evalMsg.setFont(new Font("Arial", Font.PLAIN, 14));
         evalMsg.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -251,9 +253,23 @@ public class MainFrame extends JFrame {
         return panel;
     }
 
-    public void updateScores() {
+    public void updateScores() { // updates all scores and messages after an entry is added
         sleepScorePanel.setScore(manager.calculateSleepScore());
         consistencyScorePanel.setScore(manager.calculateConsistencyScore());
+        double avgSleepHours = manager.getAvgSleepForLastSevenDays();
+        avgDuration.setText(String.format("Avg Sleep Duration: %.1f hours", Math.max(avgSleepHours, 0)));
+        if(avgSleepHours <= 2){
+            evalMsg.setText("You should get more sleep!");
+        } else if(avgSleepHours <= 5){
+            evalMsg.setText("Try to sleep a bit more and by a bit I mean a lot.");
+        } else if(avgSleepHours <= 7){
+            evalMsg.setText("Not bad, but could be better.");
+        } else if(avgSleepHours <= 9){
+            evalMsg.setText("Great job on your sleep! Keep it up!");
+        } else {
+            evalMsg.setText("Wow, you're a sleep champion!");
+        }
+                
         barGraph.repaint(); // Refresh bar graph
         dashboardPanel.repaint(); // Refresh everything, including streak bar
     }   
